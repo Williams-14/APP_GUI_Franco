@@ -7,7 +7,7 @@
 4. PIL
 5. Numpy
 
-# Puedes descargar el zip del repositorio en la parte superior de tu pantalla, donde dice <>Code, boton verde: <br>
+## Puedes descargar el zip del repositorio en la parte superior de tu pantalla, donde dice <>Code, boton verde: <br>
 ![ejemplo](image2.png)
 
 
