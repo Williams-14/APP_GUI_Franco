@@ -12,5 +12,5 @@ Usa el siguiente comando ~~Tener python >3.12
 `pip -r install requeriments.txt`
 
 ## seguido abrir la carpeta del codigo en cualquier edito, ya sea Atom, VC, Vim, SublimeText, y ejecutar app.py directamente o desde la barra de comando.
-![Ejemplo de CLI](image.png)
+![Ejemplo de CLI](image.png)<br>
 para cerrar el software en la barra de comandos del interpetre presionar `ctrl + c`
