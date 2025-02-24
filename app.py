@@ -1,19 +1,10 @@
 import flet as ft
+from Control_flow.extract import *
 
-def extract_numeric_values(text):
-    # Verifica si el texto contiene comas
-    if isinstance(text, str) and ',' in text:
-        # Divide el texto por comas y convierte a float
-        return [float(value) for value in text.split(',') if value.strip().isdigit()]
-    elif isinstance(text, str):
-        # Convierte el valor único a float
-        return [float(text)] if text.strip().isdigit() else []
-    else:
-        return []
 
 def main(page: ft.Page):
     page.bgcolor = ft.colors.BLUE_GREY_700
-    page.title = "Tiempo de operaciones REG & LOG"
+    page.title = "Tiempo de operaciones REG & LOG 1.0"
     page.window.width = 1000
     page.window.height = 750
     
