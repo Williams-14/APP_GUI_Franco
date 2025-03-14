@@ -1,14 +1,19 @@
 import flet as ft
 from Control_flow.extract import *
 
-
 def main(page: ft.Page):
-    page.bgcolor = ft.colors.BLUE_GREY_700
+    page.bgcolor = ft.colors.WHITE
     page.title = "Tiempo de operaciones REG & LOG 1.0"
     page.window.width = 1000
     page.window.height = 750
     
     # Columna 1    
+    ensamble_equipo = 45  # minutos
+    estabilizacion = 180  # minutos
+    calibracion = 25
+    # Velocidades de intervalo de herramienta a intervalo de interés
+    velocidad_plt = 15  # m/min
+    velocidad_ns = 15
     # Parte 1
     texto_1 = ft.Text("Ingreso de datos generales", size=20)
     produnfidad_de_pozo = ft.TextField(label="Profundidad del pozo", value="4000")
@@ -16,7 +21,7 @@ def main(page: ft.Page):
     contenedor_general = ft.Column(
         controls=[produnfidad_de_pozo],
         width=250
-    )
+    ) 
     
     # Parte 2
     texto_2 = ft.Text("Herramientas y pozo", size=20)
@@ -33,9 +38,9 @@ def main(page: ft.Page):
         herramienta_valor.value = cinta_herramienta.value
         page.update()
     
-    def actualizar_profundidad(e):
-        profundidad_valor.value = produnfidad_de_pozo.value
-        page.update()
+    # def actualizar_profundidad(e):
+    #     profundidad_valor.value = produnfidad_de_pozo.value
+    #     page.update()
     
     def actualizar_intervalos(e):
         intervalos_valor.value = intervalos_interes.value
@@ -111,23 +116,7 @@ def main(page: ft.Page):
     
     # Columna derecha
     columna_derecha = ft.Column(
-        controls=[
-            ft.Text(value=" ", size=20),
-            ft.Text("Herramienta seleccionada:"),
-            herramienta_valor,
-            ft.Text("Profundidad del pozo:"),
-            profundidad_valor,
-            ft.Text("Intervalos de interés:"),
-            intervalos_valor,
-            ft.Text("Pasada PLT:"),
-            pasada_valor,
-            ft.Text("Estaciones PLT:"),
-            estaciones_valor,
-            ft.Text("Tiempo de medición PLT:"),
-            tiempo_medicion_PLT_valor,
-            ft.Text("Tiempo de medición NS:"),
-            tiempo_medicion_NS_valor
-        ],
+        controls=[ft.Text("TIEMPOS")],
         spacing=18
     )
     
@@ -141,23 +130,54 @@ def main(page: ft.Page):
     )
     
     page.add(layout_principal)
-
+    
+    # ! Pagina para los resultados a imprimir ne pantalla
+    armado_alinedo = ensamble_equipo * 2
+    estabilizacion_pozo = estabilizacion * 2
+    viaje_calibracion = (int(produnfidad_de_pozo.value) / calibracion) * 2
+    
     def procesar_valores(e):
         # Extraer valores numéricos de los TextField solo si no están vacíos
         if intervalos_interes.value:
             intervalos_interes_values = extract_numeric_values(intervalos_interes.value)
-            print(f"Intervalos de interés: {intervalos_interes_values}")
-        
+            arribo_a_intevalo_PLT = intervalos_interes_values[0] / calibracion
+            
         if pasada_de_PLT.value:
             pasada_de_PLT_values = extract_numeric_values(pasada_de_PLT.value)
-            print(f"Pasada PLT: {pasada_de_PLT_values}")
-        
+            
         if esatciones_de_PLT.value:
             esatciones_de_PLT_values = extract_numeric_values(esatciones_de_PLT.value)
-            print(f"Estaciones PLT: {esatciones_de_PLT_values}")
+            
+        pasada_PLT = sum(((intervalos_interes_values[1] - intervalos_interes_values[0]) / velocidad) * 2 for velocidad in pasada_de_PLT_values)
+        estaciones_para_PLT = (len(esatciones_de_PLT_values) * int(tiempo_de_medicion_PLT.value)) + sum((esatciones_de_PLT_values[i] - esatciones_de_PLT_values[i -1]) / 3 for i in range(1, len(esatciones_de_PLT_values)))
+        recuperacion_PLT = esatciones_de_PLT_values[-1] / velocidad_plt
+        
+        NS = intervalos_interes_values[0] / calibracion
+        pasada_de_NS = ((intervalos_interes_values[1] - intervalos_interes_values[0]) / 3 + (intervalos_interes_values[1] - intervalos_interes_values[0]) * 1) * 2
+        arribo_regreso_NS = intervalos_interes_values[0] / calibracion
+        tiemp_total = (armado_alinedo + estabilizacion_pozo + viaje_calibracion + arribo_a_intevalo_PLT + pasada_PLT + estaciones_para_PLT + recuperacion_PLT + NS + pasada_de_NS + arribo_regreso_NS)
+        Horas = tiemp_total / 60
+        
+        # Actualizar la columna derecha con los valores calculados
+        columna_derecha.controls = [
+            ft.Text(f"Armado y alineado: {armado_alinedo} minutos"),
+            ft.Text(f"Estabilización del pozo: {estabilizacion_pozo} minutos"),
+            ft.Text(f"Viaje de calibración: {viaje_calibracion} minutos"),
+            ft.Text(f"Arribo a intervalo PLT: {arribo_a_intevalo_PLT} minutos"),
+            ft.Text(f"Pasada PLT: {round(pasada_PLT,3)} minutos"),
+            ft.Text(f"Estaciones para PLT: {round(estaciones_para_PLT,3)} minutos"),
+            ft.Text(f"Recuperación PLT: {round(recuperacion_PLT,3)} minutos"),
+            ft.Text(f"NS: {round(NS,2)} minutos"),
+            ft.Text(f"Pasada de NS: {round(pasada_de_NS,3)} minutos"),
+            ft.Text(f"Arribo y regreso NS: {round(arribo_regreso_NS,3)} minutos"),
+            ft.Text(f"Tiempo total: {round(tiemp_total,3)} minutos"),
+            ft.Text(f"Horas: {round(Horas,3)} horas")
+        ]
+        page.update()
 
-    # Botón para procesar los valores
+    # Botón para procesar los valores 
     boton_procesar = ft.ElevatedButton(text="Procesar valores", on_click=procesar_valores)
     page.add(boton_procesar)
 
 ft.app(target=main)
+
