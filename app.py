@@ -116,7 +116,7 @@ def main(page: ft.Page):
     
     # Columna derecha
     columna_derecha = ft.Column(
-        controls=[ft.Text("TIEMPOS")],
+        controls=[ft.Text("Tiempos de operación", size=20)],
         spacing=18
     )
     
@@ -124,6 +124,7 @@ def main(page: ft.Page):
     layout_principal = ft.Row(
         controls=[
             columna_izquierda,
+            ft.VerticalDivider(),
             columna_derecha
         ],
         expand=True
@@ -160,6 +161,7 @@ def main(page: ft.Page):
         
         # Actualizar la columna derecha con los valores calculados
         columna_derecha.controls = [
+            ft.Text("Tiempos de operación", size=20),
             ft.Text(f"Armado y alineado: {armado_alinedo} minutos"),
             ft.Text(f"Estabilización del pozo: {estabilizacion_pozo} minutos"),
             ft.Text(f"Viaje de calibración: {viaje_calibracion} minutos"),
@@ -171,7 +173,7 @@ def main(page: ft.Page):
             ft.Text(f"Pasada de NS: {round(pasada_de_NS,3)} minutos"),
             ft.Text(f"Arribo y regreso NS: {round(arribo_regreso_NS,3)} minutos"),
             ft.Text(f"Tiempo total: {round(tiemp_total,3)} minutos"),
-            ft.Text(f"Horas: {round(Horas,3)} horas")
+            ft.Text(f"Horas: {round(Horas,3)} horas", style="b")
         ]
         page.update()
 
